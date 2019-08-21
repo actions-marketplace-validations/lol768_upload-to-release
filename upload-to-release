@@ -9,7 +9,7 @@ if [[ -z "$GITHUB_TOKEN" ]]; then
   exit 1
 fi
 
-1=$(cat $HOME/fn.txt)
+1=$(cat /github/workspace/fn.txt)
 
 # Only upload to non-draft releases
 IS_DRAFT=$(jq --raw-output '.release.draft' $GITHUB_EVENT_PATH)
