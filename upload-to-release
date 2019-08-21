@@ -9,7 +9,7 @@ if [[ -z "$GITHUB_TOKEN" ]]; then
   exit 1
 fi
 
-1=$(cat /github/workspace/fn.txt)
+FN=$(cat /github/workspace/fn.txt)
 
 # Only upload to non-draft releases
 IS_DRAFT=$(jq --raw-output '.release.draft' $GITHUB_EVENT_PATH)
@@ -20,7 +20,7 @@ fi
 
 # Prepare the headers
 AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
-CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${1}")"
+CONTENT_LENGTH_HEADER="Content-Length: $(stat -c%s "${FN}")"
 
 if [[ -z "$2" ]]; then
   CONTENT_TYPE_HEADER="Content-Type: ${2}"
@@ -30,7 +30,7 @@ fi
 
 # Build the Upload URL from the various pieces
 RELEASE_ID=$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)
-FILENAME=$(basename $1)
+FILENAME=$(basename $FN)
 UPLOAD_URL="https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${FILENAME}"
 echo "$UPLOAD_URL"
 
@@ -41,5 +41,5 @@ curl \
   -H "${AUTH_HEADER}" \
   -H "${CONTENT_LENGTH_HEADER}" \
   -H "${CONTENT_TYPE_HEADER}" \
-  --upload-file "${1}" \
+  --upload-file "${FN}" \
   "${UPLOAD_URL}"
